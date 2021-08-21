@@ -1,0 +1,93 @@
+import delimited "D:\Dropbox\IMACGO\20180510 CUSUM analysis manuscript\Learning curve\Dataset.txt", clear 
+set scheme s2color
+
+##Plot linear fits##
+rreg daysreceipttoreport caseno
+twoway (lfitci daysreceipttoreport caseno) || scatter daysreceipttoreport caseno
+
+rreg daysfromsampletongs caseno
+twoway (lfitci daysfromsampletongs caseno) || scatter daysfromsampletongs caseno
+
+rreg daysfromngstobioinformatics caseno
+twoway (lfitci daysfromngstobioinformatics caseno) || scatter daysfromngstobioinformatics caseno
+
+
+##Plot Poisson / negative binomial fits##
+drop Xb xb stdp Lb lb Ub ub
+nbreg daysreceipttoreport caseno if daysreceipttoreport, vce(robust)
+predict Xb , xb
+gen xb = exp(Xb)
+predict double stdp, stdp
+generate Lb = Xb + stdp*invnormal(0.025)
+gen lb = exp(Lb)
+generate Ub = Xb + stdp*invnormal(0.975)
+gen ub = exp(Ub)
+graph twoway line xb caseno, sort lcolor(black) lpattern(solid) || rarea lb ub caseno, sort color(gs14) ylabel( , angle(horizontal) nogrid) legend(off) || scatter daysreceipttoreport caseno || lfitci daysreceipttoreport caseno if daysreceipttoreport <70
+
+drop Xb xb stdp Lb lb Ub ub
+nbreg daysfromngstobioinformatics caseno, vce(robust)
+predict Xb , xb
+gen xb = exp(Xb)
+predict double stdp, stdp
+generate Lb = Xb + stdp*invnormal(0.025)
+gen lb = exp(Lb)
+generate Ub = Xb + stdp*invnormal(0.975)
+gen ub = exp(Ub)
+graph twoway rarea lb ub caseno, sort color(gs14) || line xb caseno, sort lcolor(black) lpattern(solid)  ylabel( , angle(horizontal) nogrid) legend(off) || scatter daysfromngstobioinformatics caseno || lfitci daysfromngstobioinformatics caseno 
+
+drop Xb xb stdp Lb lb Ub ub
+nbreg daysfromsampletongs caseno
+predict Xb , xb
+gen xb = exp(Xb)
+predict double stdp, stdp
+generate Lb = Xb + stdp*invnormal(0.025)
+gen lb = exp(Lb)
+generate Ub = Xb + stdp*invnormal(0.975)
+gen ub = exp(Ub)
+graph twoway rarea lb ub caseno, sort color(gs14) || line xb caseno, sort lcolor(black) lpattern(solid)  ylabel( , angle(horizontal) nogrid) legend(off) || scatter daysfromsampletongs caseno || lfitci daysfromsampletongs caseno
+
+
+##Plot CUSUM E-O charts##
+sum daysfromsampletongs
+gen diff_receipttoNGS = 18.12329 – daysfromsampletongs //note that 18.12329 represents the average value from the preceding ‘summarize’ command
+gen CUSUM_receipttoNGS = sum(diff_receipttoNGS)
+twoway line CUSUM_receipttoNGS caseno
+
+sum daysfromngstobioinformatics
+gen diff_NGStobioinformatics = 13.73151 – daysfromngstobioinformatics //note that 13.73151 represents the average value from the preceding ‘summarize’ command
+gen CUSUM_NGStobioinformatics = sum(diff_NGStobioinformatics)
+twoway line CUSUM_NGStobioinformatics caseno
+
+
+sum daysreceipttoreport
+gen diff_receipttoreport = 31.58402 – daysreceipttoreport //note that 31.58402 represents the average value from the preceding ‘summarize’ command
+gen CUSUM_receipttoreport = sum(diff_receipttoreport)
+twoway line CUSUM_receipttoreport caseno
+
+
+###Plot EWMA charts###
+tsset caseno
+
+tssmooth exponential float receipttoreport_ewma = daysreceipttoreport, parms(0.03) samp0(10)
+twoway (tsline receipttoreport_ewma) 
+
+tssmooth exponential float daysfromsampletongs_ewma = daysfromsampletongs, parms(0.03) samp0(10)
+twoway (tsline daysfromsampletongs_ewma) 
+
+tssmooth exponential float daysfromngstobioinformatics_ewma = daysfromngstobioinformatics, parms(0.03) samp0(10)
+twoway (tsline daysfromngstobioinformatics_ewma)
+
+
+##Plot CUSUM log-likelihood ratio charts without reset##
+logistic overall_morethan42days 
+predict p_overall_morethan42days
+rasprt overall_morethan42days caseno, pr(p_overall_morethan42days) or(1.2) noreset
+
+logistic ngs_morethan21days 
+predict p_ngs_morethan21days
+rasprt ngs_morethan21days caseno, pr(p_ngs_morethan21days) or(1.2) noreset
+
+logistic bioinformatics_morethan21days 
+predict p_bioinformatics_morethan21days
+rasprt bioinformatics_morethan21days caseno, pr(p_bioinformatics_morethan21days) or(1.2) noreset
+
