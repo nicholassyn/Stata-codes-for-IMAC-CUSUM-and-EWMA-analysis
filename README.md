@@ -1,8 +1,10 @@
-These script will automatically generate some of the key results reported in Jain et al, 2021 (Frontiers in Oncology). Data used are based on the Integrated Molecular Analysis of Cancer (IMAC) precision oncology trial conducted in National University Cancer Institute, Singapore (NCIS), National University Hospital (NUH) Singapore, Cancer Science Institute of Singapore (CSI), and Yong Loo Lin School of Medicine, National University of Singapore. 
+This GitHub page contains the anonymized dataset and Stata code for key results reported in Jain et al, 2021 (Frontiers in Oncology)
+
+Data used are based on the Integrated Molecular Analysis of Cancer (IMAC) precision oncology trial conducted in National University Cancer Institute, Singapore (NCIS), National University Hospital (NUH) Singapore, Cancer Science Institute of Singapore (CSI), and Yong Loo Lin School of Medicine, National University of Singapore. 
 
 Anonymized data containing turnaround time and case number (sorted chronologically) are provided in the file with the 'txt' suffix. Chronologically-sorted case number are denoted by the $CaseNo column. Overall days from receipt to molecular report, as well as the breakdown of days from receipt/NGS analysis to bioinformatics analysis, and from bioinformatics analysis to report generation, are found in the last few columns of the dataset.
 
-The code are based on the Stata programming language, and can be found in 'Stata code' file
+The code are based on the Stata programming language, and can be found in 'Stata code' file. This script will automatically generate the plots and results reported in Jain et al, 2021 (Frontiers in Oncology). 
 
 References:
 
