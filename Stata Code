@@ -1,4 +1,3 @@
-import delimited "D:\Dropbox\IMACGO\20180510 CUSUM analysis manuscript\Learning curve\Dataset.txt", clear 
 set scheme s2color
 
 ##Plot linear fits##
